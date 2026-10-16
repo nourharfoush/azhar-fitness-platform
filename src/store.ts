@@ -304,7 +304,26 @@ export const useUserManagementStore = create<UserManagementStore>()(
           ),
         })),
     }),
-    { name: 'azhar-fitness-users' }
+    {
+      name: 'azhar-fitness-users',
+      version: 2,
+      migrate: (persistedState: any) => {
+        if (!persistedState || !Array.isArray(persistedState.users)) {
+          return { users: INITIAL_USERS };
+        }
+        return {
+          ...persistedState,
+          users: persistedState.users.map((u: any) => {
+            const init = INITIAL_USERS.find((i) => i.id === u.id);
+            return {
+              ...u,
+              username: u.username || init?.username || (u.email ? u.email.split('@')[0] : 'user'),
+              password: u.password || init?.password || 'Azhar@2026',
+            };
+          }),
+        };
+      },
+    }
   )
 );
 

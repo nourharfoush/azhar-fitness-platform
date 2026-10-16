@@ -15,7 +15,21 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
 
-  const allAvailableUsers = users && users.length > 0 ? users : INITIAL_USERS;
+  // Combine default initial users and local storage users so all accounts are always available
+  const combinedMap = new Map<string, any>();
+  INITIAL_USERS.forEach((u) => combinedMap.set(u.id, { ...u }));
+  if (users && Array.isArray(users)) {
+    users.forEach((u) => {
+      const existing = combinedMap.get(u.id);
+      combinedMap.set(u.id, {
+        ...existing,
+        ...u,
+        username: u.username || existing?.username || (u.email ? u.email.split('@')[0] : 'admin'),
+        password: u.password || existing?.password || 'Azhar@2026',
+      });
+    });
+  }
+  const allAvailableUsers = Array.from(combinedMap.values());
 
   const handleQuickSelect = (uName: string, pass: string) => {
     setIdentifier(uName);
@@ -38,12 +52,18 @@ export default function LoginPage() {
     setLoading(true);
 
     setTimeout(() => {
-      // Find user by username or email
-      const foundUser = allAvailableUsers.find(
-        (u) =>
-          (u.username && u.username.toLowerCase() === trimmedId) ||
-          (u.email && u.email.toLowerCase() === trimmedId)
-      );
+      // Find user by username, full email, or username prefix before @
+      let foundUser = allAvailableUsers.find((u) => {
+        const uName = (u.username || '').toLowerCase();
+        const uEmail = (u.email || '').toLowerCase();
+        const emailPrefix = uEmail.split('@')[0];
+        return uName === trimmedId || uEmail === trimmedId || emailPrefix === trimmedId;
+      });
+
+      // Direct fallback for default admin credentials
+      if (!foundUser && (trimmedId === 'admin' || trimmedId === 'admin@azhar.gov.eg')) {
+        foundUser = INITIAL_USERS[0];
+      }
 
       if (!foundUser) {
         setLoading(false);
@@ -306,7 +326,9 @@ export default function LoginPage() {
                     }}
                   >
                     <span style={{ fontWeight: 700 }}>{u.username || u.email.split('@')[0]}</span>
-                    <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{ROLE_LABELS[u.role] || u.role}</span>
+                    <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+                      {ROLE_LABELS[u.role as keyof typeof ROLE_LABELS] || u.role}
+                    </span>
                   </button>
                 );
               })}
