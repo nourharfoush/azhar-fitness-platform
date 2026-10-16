@@ -632,6 +632,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr-admin',
     name: 'د. عبد الرحمن الأزهري',
+    username: 'admin',
+    password: 'Azhar@2026',
     email: 'admin@azhar.gov.eg',
     role: 'system_admin',
     scopeType: 'national',
@@ -645,6 +647,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr-sector',
     name: 'فضيلة الشيخ / أيمن عبد الغني',
+    username: 'sector',
+    password: 'Azhar@2026',
     email: 'sector.head@azhar.gov.eg',
     role: 'sector_admin',
     scopeType: 'national',
@@ -658,6 +662,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr-cairo',
     name: 'أ/ شريف عبد المنعم',
+    username: 'coord_cairo',
+    password: 'Azhar@2026',
     email: 'coord.cairo@azhar.gov.eg',
     role: 'region_coordinator',
     scopeType: 'region',
@@ -671,6 +677,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr-alex',
     name: 'أ/ هاني السكندري',
+    username: 'coord_alex',
+    password: 'Azhar@2026',
     email: 'coord.alex@azhar.gov.eg',
     role: 'region_coordinator',
     scopeType: 'region',
@@ -684,6 +692,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr-inspector-tanta',
     name: 'ك/ نبيل القاضي',
+    username: 'inspector_tanta',
+    password: 'Azhar@2026',
     email: 'inspector.tanta@azhar.gov.eg',
     role: 'admin_inspector',
     scopeType: 'administration',
@@ -697,6 +707,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr-teacher-tayeb',
     name: 'ك/ محمود عبد الفتاح',
+    username: 'pe_tayeb',
+    password: 'Azhar@2026',
     email: 'pe.tayeb@azhar.gov.eg',
     role: 'institute_officer',
     scopeType: 'institute',
@@ -710,6 +722,8 @@ export const INITIAL_USERS: User[] = [
   {
     id: 'usr-arbitrator-1',
     name: 'ك/ طارق عبد الجليل',
+    username: 'judge_tarek',
+    password: 'Azhar@2026',
     email: 'judge.tarek@azhar.gov.eg',
     role: 'arbitrator',
     scopeType: 'national',

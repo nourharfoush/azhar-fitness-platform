@@ -38,6 +38,8 @@ export const useAuthStore = create<AuthStore>()(
       user: {
         id: 'usr-admin',
         name: 'د. عبد الرحمن الأزهري',
+        username: 'admin',
+        password: 'Azhar@2026',
         email: 'admin@azhar.gov.eg',
         role: 'system_admin',
         scopeType: 'national',

@@ -1,45 +1,73 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Eye, EyeOff, Lock, Mail, CheckCircle2, Award, Sparkles } from 'lucide-react';
-import { useAuthStore } from '../store';
-import type { User as UserType } from '../types';
+import { Shield, Eye, EyeOff, Lock, UserCircle, CheckCircle2, Sparkles, KeyRound } from 'lucide-react';
+import { useAuthStore, useUserManagementStore } from '../store';
+import { INITIAL_USERS } from '../data/sampleData';
+import { ROLE_LABELS } from '../types';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login, isLoading, setLoading } = useAuthStore();
-  
-  const [email, setEmail] = useState('admin@azhar.gov.eg');
+  const { users } = useUserManagementStore();
+
+  const [identifier, setIdentifier] = useState('admin');
   const [password, setPassword] = useState('Azhar@2026');
-  const [name, setName] = useState('المشرف العام');
-  const [role, setRole] = useState<UserType['role']>('system_admin');
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
+
+  const allAvailableUsers = users && users.length > 0 ? users : INITIAL_USERS;
+
+  const handleQuickSelect = (uName: string, pass: string) => {
+    setIdentifier(uName);
+    setPassword(pass);
+    setError('');
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!email || !password) {
-      setError('يرجى ملء جميع الحقول المطلوبة');
+    const trimmedId = identifier.trim().toLowerCase();
+    const trimmedPass = password.trim();
+
+    if (!trimmedId || !trimmedPass) {
+      setError('يرجى إدخال اسم المستخدم وكلمة المرور');
       return;
     }
 
     setLoading(true);
-    setTimeout(() => {
-      const authenticatedUser: UserType = {
-        id: 'usr-' + Date.now(),
-        name: name || 'مسؤول المنظومة',
-        email,
-        role,
-        scopeType: role === 'system_admin' ? 'national' : 'region',
-        scopeId: null,
-        isActive: true,
-        createdAt: new Date().toISOString(),
-      };
 
-      login(authenticatedUser);
+    setTimeout(() => {
+      // Find user by username or email
+      const foundUser = allAvailableUsers.find(
+        (u) =>
+          (u.username && u.username.toLowerCase() === trimmedId) ||
+          (u.email && u.email.toLowerCase() === trimmedId)
+      );
+
+      if (!foundUser) {
+        setLoading(false);
+        setError('اسم المستخدم أو البريد الإلكتروني غير مسجل في المنظومة');
+        return;
+      }
+
+      if (!foundUser.isActive) {
+        setLoading(false);
+        setError('هذا الحساب معطل حالياً من قبل إدارة النظام، يرجى مراجعة المسؤول.');
+        return;
+      }
+
+      const expectedPassword = foundUser.password || 'Azhar@2026';
+      if (trimmedPass !== expectedPassword) {
+        setLoading(false);
+        setError('كلمة المرور غير صحيحة، يرجى التحقق وإعادة المحاولة.');
+        return;
+      }
+
+      // Successful login with user's role and scope
+      login(foundUser);
       navigate('/', { replace: true });
-    }, 400);
+    }, 350);
   };
 
   return (
@@ -79,7 +107,7 @@ export default function LoginPage() {
 
       <div style={{
         width: '100%',
-        maxWidth: '460px',
+        maxWidth: '480px',
         zIndex: 1
       }}>
         {/* الترويسة والشعار */}
@@ -124,7 +152,7 @@ export default function LoginPage() {
             المشروع القومي للياقة البدنية
           </h1>
           <p style={{ fontSize: '0.9rem', color: '#94a3b8' }}>
-            المنظومة الرقمية الموحدة للتقييم والرصد الميداني
+            تسجيل الدخول الآمن للمنظومة باليوزر والباسورد
           </p>
         </div>
 
@@ -146,43 +174,17 @@ export default function LoginPage() {
             alignItems: 'center',
             gap: '0.5rem'
           }}>
+            <KeyRound size={20} color="#10b981" />
             <span>تسجيل الدخول للمنظومة</span>
           </h2>
 
           <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <label className="form-label">الاسم الكامل / الصفة</label>
-              <input
-                type="text"
-                className="form-control"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="أدخل الاسم"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">مستوى الصلاحية المعتمد</label>
-              <select
-                className="form-control"
-                value={role}
-                onChange={(e) => setRole(e.target.value as any)}
-              >
-                <option value="system_admin">مدير النظام العام (إدارة المنظومة بالكامل)</option>
-                <option value="sector_admin">قطاع المعاهد الأزهرية (الإدارة المركزية)</option>
-                <option value="region_coordinator">منسق المنطقة الأزهرية</option>
-                <option value="admin_inspector">موجه التربية الرياضية بالإدارة</option>
-                <option value="institute_officer">معلم التربية الرياضية بالمعهد</option>
-                <option value="arbitrator">عضو لجنة التحكيم والتقييم</option>
-                <option value="viewer">متابع ومستعرض للتقارير والإحصاءات</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">البريد الإلكتروني المؤسسي</label>
+            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+              <label className="form-label" style={{ color: '#cbd5e1', marginBottom: '0.4rem' }}>
+                اسم المستخدم أو البريد الإلكتروني:
+              </label>
               <div style={{ position: 'relative' }}>
-                <Mail size={18} style={{
+                <UserCircle size={18} style={{
                   position: 'absolute',
                   right: '1rem',
                   top: '50%',
@@ -190,19 +192,21 @@ export default function LoginPage() {
                   color: 'var(--text-muted)'
                 }} />
                 <input
-                  type="email"
+                  type="text"
                   className="form-control"
-                  style={{ paddingRight: '2.75rem' }}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@azhar.gov.eg"
+                  style={{ paddingRight: '2.75rem', height: '46px', fontSize: '0.95rem' }}
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder="admin أو user@azhar.gov.eg"
                   required
                 />
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">كلمة المرور</label>
+            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+              <label className="form-label" style={{ color: '#cbd5e1', marginBottom: '0.4rem' }}>
+                كلمة المرور (Password):
+              </label>
               <div style={{ position: 'relative' }}>
                 <Lock size={18} style={{
                   position: 'absolute',
@@ -214,7 +218,7 @@ export default function LoginPage() {
                 <input
                   type={showPass ? 'text' : 'password'}
                   className="form-control"
-                  style={{ paddingRight: '2.75rem', paddingLeft: '2.75rem' }}
+                  style={{ paddingRight: '2.75rem', paddingLeft: '2.75rem', height: '46px', fontSize: '0.95rem' }}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -235,6 +239,7 @@ export default function LoginPage() {
                     display: 'flex',
                     alignItems: 'center'
                   }}
+                  title={showPass ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
                 >
                   {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -248,7 +253,7 @@ export default function LoginPage() {
                 background: 'rgba(244,63,94,0.15)',
                 border: '1px solid rgba(244,63,94,0.3)',
                 color: '#fb7185',
-                fontSize: '0.85rem',
+                fontSize: '0.88rem',
                 marginBottom: '1.25rem'
               }}>
                 {error}
@@ -263,7 +268,8 @@ export default function LoginPage() {
                 padding: '0.85rem',
                 fontSize: '1rem',
                 fontWeight: 700,
-                borderRadius: '12px'
+                borderRadius: '12px',
+                height: '46px'
               }}
               disabled={isLoading}
             >
@@ -271,9 +277,45 @@ export default function LoginPage() {
             </button>
           </form>
 
+          {/* حسابات تجريبية سريعة */}
+          <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.75rem', fontWeight: 600 }}>
+              حسابات تجريبية سريعة (انقر للاختيار التلقائي):
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+              {allAvailableUsers.slice(0, 6).map((u) => {
+                const isSelected = identifier.toLowerCase() === (u.username || '').toLowerCase();
+                return (
+                  <button
+                    key={u.id}
+                    type="button"
+                    onClick={() => handleQuickSelect(u.username || u.email.split('@')[0], u.password || 'Azhar@2026')}
+                    style={{
+                      padding: '0.45rem 0.6rem',
+                      borderRadius: '8px',
+                      background: isSelected ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.05)',
+                      border: `1px solid ${isSelected ? 'rgba(16,185,129,0.5)' : 'rgba(255,255,255,0.08)'}`,
+                      color: isSelected ? '#34d399' : '#e2e8f0',
+                      textAlign: 'right',
+                      cursor: 'pointer',
+                      fontSize: '0.78rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '2px',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <span style={{ fontWeight: 700 }}>{u.username || u.email.split('@')[0]}</span>
+                    <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{ROLE_LABELS[u.role] || u.role}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div style={{
             marginTop: '1.5rem',
-            paddingTop: '1.25rem',
+            paddingTop: '1rem',
             borderTop: '1px solid rgba(255,255,255,0.08)',
             display: 'flex',
             alignItems: 'center',
