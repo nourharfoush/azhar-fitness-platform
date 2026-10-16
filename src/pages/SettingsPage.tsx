@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import {
   Settings, Save, Download, Upload, RotateCcw,
   CheckCircle, AlertCircle, Database, Server, Shield,
-  Calendar, Clock, Sliders
+  Calendar, Clock, Sliders, Cloud, RefreshCw, Layers
 } from 'lucide-react';
 import { useSettingsStore, useAuditLogStore, useAuthStore } from '../store';
+import { checkAtlasHealth, seedAtlasDatabase, type AtlasHealthStatus } from '../services/api';
 
 export default function SettingsPage() {
   const { settings, updateSettings, resetAllData } = useSettingsStore();
@@ -13,6 +14,47 @@ export default function SettingsPage() {
 
   const [formState, setFormState] = useState({ ...settings });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [atlasStatus, setAtlasStatus] = useState<AtlasHealthStatus | null>(null);
+  const [isCheckingAtlas, setIsCheckingAtlas] = useState(false);
+  const [isSeedingAtlas, setIsSeedingAtlas] = useState(false);
+  const [seedMessage, setSeedMessage] = useState<string | null>(null);
+
+  const handleCheckAtlas = async () => {
+    setIsCheckingAtlas(true);
+    setSeedMessage(null);
+    try {
+      const res = await checkAtlasHealth();
+      setAtlasStatus(res);
+    } catch (err: any) {
+      setAtlasStatus({
+        status: 'disconnected',
+        message: err.message || 'تعذر الاتصال بقاعدة البيانات السحابية',
+      });
+    } finally {
+      setIsCheckingAtlas(false);
+    }
+  };
+
+  const handleSeedAtlas = async () => {
+    if (!window.confirm('هل تريد رفع ومزامنة البيانات النموذجية الكاملة إلى قاعدة بيانات MongoDB Atlas السحابية؟')) {
+      return;
+    }
+    setIsSeedingAtlas(true);
+    setSeedMessage(null);
+    try {
+      const res = await seedAtlasDatabase();
+      if (res.success) {
+        setSeedMessage(`✅ تم بنجاح: ${res.message}`);
+        handleCheckAtlas();
+      } else {
+        setSeedMessage(`⚠️ تنبيه: ${res.message}`);
+      }
+    } catch (err: any) {
+      setSeedMessage(`❌ خطأ: ${err.message}`);
+    } finally {
+      setIsSeedingAtlas(false);
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -260,6 +302,75 @@ export default function SettingsPage() {
               >
                 <RotateCcw size={16} />
                 <span>إعادة ضبط البيانات النموذجية الأولية</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Cloud Database (MongoDB Atlas) Card */}
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">
+                <Cloud size={20} color="var(--primary)" />
+                <span>الربط السحابي وقاعدة بيانات MongoDB Atlas</span>
+              </div>
+              <span className={`badge ${atlasStatus?.status === 'connected' ? 'badge-success' : 'badge-warning'}`}>
+                {atlasStatus?.status === 'connected' ? 'متصل بالسحابة' : 'وضع التخزين المحلي النشط'}
+              </span>
+            </div>
+
+            <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.25rem', lineHeight: 1.6 }}>
+              تدعم المنظومة هندسة هجينة فائقة الأمان (Hybrid Offline-First): تعمل بكفاءة تامة بدون إنترنت عبر التخزين المحلي، وتتصل تلقائياً بسحابة <strong>MongoDB Atlas</strong> عند توفر متغير البيئة <code>MONGODB_URI</code> على Vercel.
+            </p>
+
+            {atlasStatus && (
+              <div style={{
+                padding: '0.85rem 1rem',
+                borderRadius: '8px',
+                marginBottom: '1rem',
+                backgroundColor: atlasStatus.status === 'connected' ? '#f0fdf4' : '#f8fafc',
+                border: `1px solid ${atlasStatus.status === 'connected' ? '#bbf7d0' : '#e2e8f0'}`,
+                fontSize: '0.88rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, color: atlasStatus.status === 'connected' ? '#166534' : '#475569' }}>
+                  {atlasStatus.status === 'connected' ? <CheckCircle size={16} color="#16a34a" /> : <AlertCircle size={16} color="#f59e0b" />}
+                  <span>{atlasStatus.message}</span>
+                </div>
+                {atlasStatus.databaseName && (
+                  <div style={{ marginTop: '0.5rem', color: '#64748b', display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                    <span><strong>قاعدة البيانات:</strong> {atlasStatus.databaseName}</span>
+                    <span><strong>الجداول المتصلة:</strong> {atlasStatus.collectionsCount ?? 0}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {seedMessage && (
+              <div className="alert alert-info" style={{ marginBottom: '1rem', fontSize: '0.88rem' }}>
+                {seedMessage}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleCheckAtlas}
+                disabled={isCheckingAtlas}
+                style={{ justifyContent: 'center' }}
+              >
+                <RefreshCw size={16} className={isCheckingAtlas ? 'spin' : ''} />
+                <span>{isCheckingAtlas ? 'جاري فحص الاتصال...' : 'فحص حالة الاتصال بـ MongoDB Atlas'}</span>
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSeedAtlas}
+                disabled={isSeedingAtlas}
+                style={{ justifyContent: 'center' }}
+              >
+                <Layers size={16} />
+                <span>{isSeedingAtlas ? 'جاري المزامنة...' : 'مزامنة ونقل البيانات النموذجية إلى Atlas'}</span>
               </button>
             </div>
           </div>
