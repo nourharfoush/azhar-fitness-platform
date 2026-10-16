@@ -159,3 +159,64 @@
 .sidebar.collapsed .user-details {
   display: none;
 }
+
+/* زر الإغلاق للموبايل وخلفية الحجب (Mobile Drawer & Backdrop) */
+.sidebar-mobile-close {
+  display: none;
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 290px !important;
+    max-width: 85vw !important;
+    transform: translateX(100%) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    z-index: 10000 !important;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6) !important;
+  }
+
+  .sidebar.open {
+    transform: translateX(0) !important;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9999;
+  }
+
+  .sidebar-mobile-close {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e2e8f0;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    margin-right: auto;
+    transition: background 0.2s;
+  }
+
+  .sidebar-mobile-close:hover {
+    background: rgba(239, 68, 68, 0.25);
+    color: #ef4444;
+  }
+
+  .sidebar-collapse-btn {
+    display: none !important;
+  }
+}

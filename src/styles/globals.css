@@ -318,6 +318,26 @@ html, body {
   background: #ffffff;
 }
 
+/* بطاقة الترحيب الملكية */
+.welcome-card {
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 24px;
+  padding: 2rem 2.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 900px) {
+  .welcome-card {
+    padding: 1.25rem 1rem !important;
+    border-radius: 16px !important;
+    margin-bottom: 1.25rem !important;
+  }
+}
+
 /* البطاقات (Cards) */
 .card {
   background: #ffffff;
@@ -931,20 +951,172 @@ input[type="checkbox"] {
   gap: 1.5rem;
 }
 
+/* ============================================================
+   التجاوب الشامل مع الهواتف الذكية والأجهزة اللوحية (Responsive System)
+============================================================ */
+
 @media (max-width: 900px) {
-  .grid-2, .grid-3 {
-    grid-template-columns: 1fr;
-  }
   .main-content {
     margin-right: 0 !important;
+    padding-top: 60px !important;
   }
-  .sidebar {
-    transform: translateX(100%);
+
+  .main-content.sidebar-collapsed {
+    margin-right: 0 !important;
   }
-  .sidebar.open {
-    transform: translateX(0);
+
+  .page-container {
+    padding: 1.25rem 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
-  .header {
-    right: 0 !important;
+
+  .page-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.85rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .page-header > div:last-child {
+    width: 100% !important;
+  }
+
+  .page-header > div:last-child .btn {
+    width: 100% !important;
+  }
+
+  .page-title {
+    font-size: 1.35rem !important;
+    line-height: 1.3 !important;
+  }
+
+  .page-subtitle {
+    font-size: 0.85rem !important;
+  }
+
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .tabs {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    white-space: nowrap !important;
+    gap: 0.35rem !important;
+    padding-bottom: 4px !important;
+  }
+
+  .tab-btn {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.88rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .card {
+    padding: 1.25rem 1rem !important;
+    border-radius: 14px !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 0.85rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .kpi-card {
+    padding: 1rem !important;
+    gap: 0.85rem !important;
+  }
+
+  .kpi-icon-wrap {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .kpi-value {
+    font-size: 1.5rem !important;
+  }
+
+  .table-wrapper,
+  .table-responsive {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: 12px !important;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.75rem 0.85rem !important;
+    font-size: 0.82rem !important;
   }
 }
+
+@media (max-width: 640px) {
+  .page-container {
+    padding: 1rem 0.75rem !important;
+  }
+
+  .page-title {
+    font-size: 1.2rem !important;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* النوافذ المنبثقة على شاشات الموبايل (Mobile Modals) */
+  .modal-backdrop {
+    padding: 0.4rem !important;
+    align-items: flex-end !important;
+  }
+
+  .modal-content {
+    border-radius: 20px 20px 10px 10px !important;
+    max-height: 94vh !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .modal-header {
+    padding: 1rem 1.15rem !important;
+  }
+
+  .modal-title {
+    font-size: 1.05rem !important;
+  }
+
+  .modal-body {
+    padding: 1rem 1.15rem !important;
+  }
+
+  .modal-body [style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .modal-footer {
+    padding: 0.85rem 1.15rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .modal-footer .btn {
+    flex: 1 !important;
+  }
+
+  .login-card {
+    padding: 1.5rem 1.15rem !important;
+    border-radius: 18px !important;
+  }
+}
+

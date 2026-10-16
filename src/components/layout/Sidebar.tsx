@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, BookOpen, BarChart3, FileText,
   Settings, MapPin, Building2, School, ClipboardList,
   Trophy, Eye, Target, ChevronLeft, ChevronRight, LogOut,
-  Bell, Shield, UserCircle, ActivitySquare, Search
+  Bell, Shield, UserCircle, ActivitySquare, Search, X
 } from 'lucide-react';
 import { useAuthStore, useNotificationStore, useUIStore } from '../../store';
 import { ROLE_LABELS } from '../../types';
@@ -68,7 +68,7 @@ const NAV_GROUPS: NavGroupDef[] = [
 export default function Sidebar() {
   const { user, logout } = useAuthStore();
   const { unreadCount } = useNotificationStore();
-  const { isSidebarOpen, toggleSidebar } = useUIStore();
+  const { isSidebarOpen, toggleSidebar, setSidebarOpen } = useUIStore();
   const location = useLocation();
 
   const isCollapsed = !isSidebarOpen;
@@ -76,10 +76,21 @@ export default function Sidebar() {
   const getInitials = (name: string) =>
     name.split(' ').slice(0, 2).map((n) => n[0]).join('');
 
+  const handleNavClick = () => {
+    if (window.innerWidth <= 900) {
+      setSidebarOpen(false);
+    }
+  };
+
   return (
     <>
+      {/* خلفية معتمة للموبايل لإغلاق القائمة عند النقر خارجها */}
+      {isSidebarOpen && (
+        <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* القائمة الجانبية */}
-      <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+      <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${isSidebarOpen ? 'open' : ''}`}>
         {/* الشعار */}
         <div className="sidebar-logo">
           <div className="logo-icon">
@@ -89,6 +100,14 @@ export default function Sidebar() {
             <h1>لياقة الأزهر</h1>
             <p>المشروع القومي للياقة البدنية</p>
           </div>
+          <button
+            className="sidebar-mobile-close"
+            onClick={() => setSidebarOpen(false)}
+            title="إغلاق القائمة"
+            aria-label="إغلاق القائمة"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* التنقل */}
@@ -105,6 +124,7 @@ export default function Sidebar() {
                   }
                   end={item.to === '/'}
                   title={isCollapsed ? item.label : undefined}
+                  onClick={handleNavClick}
                 >
                   <span className="nav-icon">{item.icon}</span>
                   <span className="nav-label">{item.label}</span>
@@ -131,10 +151,10 @@ export default function Sidebar() {
             {!isCollapsed && <LogOut size={15} color="var(--text-muted)" />}
           </div>
 
-          {/* زر طي القائمة */}
+          {/* زر طي القائمة للشاشات الكبيرة فقط */}
           <button
             onClick={toggleSidebar}
-            className="btn btn-ghost btn-sm"
+            className="btn btn-ghost btn-sm sidebar-collapse-btn"
             style={{ width: '100%', marginTop: '0.5rem', justifyContent: 'center' }}
             title={isCollapsed ? 'توسيع القائمة' : 'طي القائمة'}
           >

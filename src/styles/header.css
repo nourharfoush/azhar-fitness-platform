@@ -152,3 +152,47 @@
   color: var(--text-light);
   margin-top: 0.3rem;
 }
+
+@media (max-width: 900px) {
+  .header {
+    right: 0 !important;
+    padding: 0 1rem !important;
+    height: 60px !important;
+  }
+
+  .header.sidebar-collapsed {
+    right: 0 !important;
+  }
+
+  .header-breadcrumb .breadcrumb-org,
+  .header-breadcrumb .breadcrumb-sep {
+    display: none !important;
+  }
+
+  .breadcrumb-current {
+    font-size: 0.95rem !important;
+    max-width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header-icon-btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .year-selector {
+    padding: 0.35rem 0.6rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .notif-panel {
+    position: fixed !important;
+    top: 65px !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+}

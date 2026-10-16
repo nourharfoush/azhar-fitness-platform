@@ -20,16 +20,7 @@ export default function DashboardPage() {
   return (
     <div className="page-container animate-fade-in">
       {/* بطاقة الترحيب الملكية الفاخرة */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(6, 78, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%)',
-        border: '1px solid rgba(16, 185, 129, 0.3)',
-        borderRadius: '24px',
-        padding: '2rem 2.5rem',
-        marginBottom: '2rem',
-        position: 'relative',
-        overflow: 'hidden',
-        boxShadow: 'var(--shadow-md)'
-      }}>
+      <div className="welcome-card">
         <div style={{
           position: 'absolute',
           top: 0,

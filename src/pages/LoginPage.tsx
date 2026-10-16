@@ -177,7 +177,7 @@ export default function LoginPage() {
         </div>
 
         {/* بطاقة تسجيل الدخول الفاخرة */}
-        <div style={{
+        <div className="login-card" style={{
           background: 'rgba(17, 24, 39, 0.85)',
           backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.1)',

@@ -81,7 +81,7 @@ export default function Header() {
           <Menu size={18} />
         </button>
         <div className="header-breadcrumb">
-          <span>المنظومة الإلكترونية</span>
+          <span className="breadcrumb-org">المنظومة الإلكترونية</span>
           <span className="breadcrumb-sep">/</span>
           <span className="breadcrumb-current">{currentTitle}</span>
         </div>
