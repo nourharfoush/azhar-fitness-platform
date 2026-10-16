@@ -168,180 +168,132 @@ export default function StudentsPage() {
 
       {/* نافذة مودال بيضاء واضحة وفخمة */}
       {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.6)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-          padding: '1.5rem'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '16px',
-            width: '100%',
-            maxWidth: '640px',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            border: '1px solid #e2e8f0',
-            overflow: 'hidden'
-          }}>
-            {/* ترويسة المودال */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '1.25rem 1.75rem',
-              borderBottom: '1px solid #e2e8f0',
-              backgroundColor: '#f8fafc'
-            }}>
+        <div className="modal-backdrop animate-fade-in" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
               <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                <h3 className="modal-title">
                   تسجيل طالب جديد في المنظومة
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.2rem', margin: 0 }}>
                   أدخل البيانات المعتمدة للطالب وفق سجل المعهد
                 </p>
               </div>
-              <button
-                onClick={() => setShowModal(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#64748b',
-                  cursor: 'pointer',
-                  padding: '0.35rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  borderRadius: '6px'
-                }}
-              >
-                <X size={20} />
+              <button className="modal-close" onClick={() => setShowModal(false)}>
+                <X size={18} />
               </button>
             </div>
 
-            {/* محتوى النموذج */}
-            <form onSubmit={handleAddStudent} style={{ padding: '1.75rem' }}>
-              <div className="form-group">
-                <label className="form-label">الاسم رباعي (وفق شهادة الميلاد)</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="مثال: أحمد محمد علي إبراهيم"
-                  required
-                />
-              </div>
-
-              <div className="grid-2">
-                <div className="form-group">
-                  <label className="form-label">الرقم القومي (14 رقم)</label>
+            <form onSubmit={handleAddStudent}>
+              <div className="modal-body">
+                <div className="form-group" style={{ marginBottom: '0.85rem' }}>
+                  <label className="form-label">الاسم رباعي (وفق شهادة الميلاد)</label>
                   <input
                     type="text"
                     className="form-control"
-                    value={nationalId}
-                    onChange={(e) => setNationalId(e.target.value)}
-                    placeholder="29901011234567"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="مثال: أحمد محمد علي إبراهيم"
                     required
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">النوع</label>
-                  <select
-                    className="form-control"
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value as Gender)}
-                  >
-                    <option value="male">بنين</option>
-                    <option value="female">بنات</option>
-                  </select>
-                </div>
-              </div>
 
-              <div className="grid-2">
-                <div className="form-group">
-                  <label className="form-label">المرحلة التعليمية</label>
-                  <select
-                    className="form-control"
-                    value={stage}
-                    onChange={(e) => setStage(e.target.value as Stage)}
-                  >
-                    <option value="primary">المرحلة الابتدائية</option>
-                    <option value="preparatory">المرحلة الإعدادية</option>
-                    <option value="secondary">المرحلة الثانوية</option>
-                  </select>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem', marginBottom: '0.85rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">الرقم القومي (14 رقم)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={nationalId}
+                      onChange={(e) => setNationalId(e.target.value)}
+                      placeholder="29901011234567"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">النوع</label>
+                    <select
+                      className="form-control"
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value as Gender)}
+                    >
+                      <option value="male">بنين</option>
+                      <option value="female">بنات</option>
+                    </select>
+                  </div>
                 </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem', marginBottom: '0.85rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">المرحلة التعليمية</label>
+                    <select
+                      className="form-control"
+                      value={stage}
+                      onChange={(e) => setStage(e.target.value as Stage)}
+                    >
+                      <option value="primary">المرحلة الابتدائية</option>
+                      <option value="preparatory">المرحلة الإعدادية</option>
+                      <option value="secondary">المرحلة الثانوية</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">الصف الدراسي</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={grade}
+                      placeholder="الصف الرابع"
+                      onChange={(e) => setGrade(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem', marginBottom: '0.85rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">المنطقة الأزهرية</label>
+                    <select
+                      className="form-control"
+                      value={selectedRegionId}
+                      onChange={(e) => handleRegionChange(e.target.value)}
+                    >
+                      {AZHAR_REGIONS.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">الإدارة التعليمية التابعة</label>
+                    <select
+                      className="form-control"
+                      value={selectedAdminId}
+                      onChange={(e) => setSelectedAdminId(e.target.value)}
+                    >
+                      {currentAdmins.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
                 <div className="form-group">
-                  <label className="form-label">الصف الدراسي</label>
+                  <label className="form-label">اسم المعهد الأزهري</label>
                   <input
                     type="text"
                     className="form-control"
-                    value={grade}
-                    placeholder="الصف الرابع"
-                    onChange={(e) => setGrade(e.target.value)}
+                    value={instituteName}
+                    onChange={(e) => setInstituteName(e.target.value)}
+                    placeholder="معهد ..."
                     required
                   />
                 </div>
               </div>
 
-              <div className="grid-2">
-                <div className="form-group">
-                  <label className="form-label">المنطقة الأزهرية</label>
-                  <select
-                    className="form-control"
-                    value={selectedRegionId}
-                    onChange={(e) => handleRegionChange(e.target.value)}
-                  >
-                    {AZHAR_REGIONS.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">الإدارة التعليمية التابعة</label>
-                  <select
-                    className="form-control"
-                    value={selectedAdminId}
-                    onChange={(e) => setSelectedAdminId(e.target.value)}
-                  >
-                    {currentAdmins.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">اسم المعهد الأزهري</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={instituteName}
-                  onChange={(e) => setInstituteName(e.target.value)}
-                  placeholder="معهد ..."
-                  required
-                />
-              </div>
-
-              {/* أزرار الحفظ والإلغاء */}
-              <div style={{
-                display: 'flex',
-                gap: '0.75rem',
-                justifyContent: 'flex-end',
-                marginTop: '1.75rem',
-                paddingTop: '1.25rem',
-                borderTop: '1px solid #e2e8f0'
-              }}>
+              <div className="modal-footer">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

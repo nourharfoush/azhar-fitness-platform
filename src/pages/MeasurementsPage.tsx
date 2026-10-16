@@ -145,141 +145,96 @@ export default function MeasurementsPage() {
 
       {/* نافذة رصد القياس المودال */}
       {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.6)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-          padding: '1.5rem'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '16px',
-            width: '100%',
-            maxWidth: '560px',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            border: '1px solid #e2e8f0',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '1.25rem 1.75rem',
-              borderBottom: '1px solid #e2e8f0',
-              backgroundColor: '#f8fafc'
-            }}>
+        <div className="modal-backdrop animate-fade-in" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
               <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                <h3 className="modal-title">
                   رصد قياسات جسمانية لطالب
                 </h3>
                 <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.2rem', margin: 0 }}>
                   تسجيل أطوال وأوزان الطالب وحساب كتلة الجسم فورياً
                 </p>
               </div>
-              <button
-                onClick={() => setShowModal(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#64748b',
-                  cursor: 'pointer',
-                  padding: '0.35rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  borderRadius: '6px'
-                }}
-              >
-                <X size={20} />
+              <button className="modal-close" onClick={() => setShowModal(false)}>
+                <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleAddMeasurement} style={{ padding: '1.75rem' }}>
-              <div className="form-group">
-                <label className="form-label">اختر الطالب</label>
-                <select
-                  className="form-control"
-                  value={selectedStudentId}
-                  onChange={(e) => setSelectedStudentId(e.target.value)}
-                >
-                  {students.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.instituteName})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">نوع جلسة القياس</label>
-                <select
-                  className="form-control"
-                  value={sessionType}
-                  onChange={(e) => setSessionType(e.target.value as any)}
-                >
-                  <option value="initial">قياس قبلي (بداية العام الدراسي)</option>
-                  <option value="final">قياس بعدي (نهاية البرنامج)</option>
-                  <option value="followup">قياس مرحلي للمتابعة</option>
-                </select>
-              </div>
-
-              <div className="grid-2">
-                <div className="form-group">
-                  <label className="form-label">الطول (سم)</label>
-                  <input
-                    type="number"
+            <form onSubmit={handleAddMeasurement}>
+              <div className="modal-body">
+                <div className="form-group" style={{ marginBottom: '0.85rem' }}>
+                  <label className="form-label">اختر الطالب:</label>
+                  <select
                     className="form-control"
-                    value={heightCm}
-                    onChange={(e) => setHeightCm(Number(e.target.value))}
-                    required
-                  />
+                    value={selectedStudentId}
+                    onChange={(e) => setSelectedStudentId(e.target.value)}
+                  >
+                    {students.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name} ({s.instituteName})
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="form-group">
-                  <label className="form-label">الوزن (كجم)</label>
-                  <input
-                    type="number"
+
+                <div className="form-group" style={{ marginBottom: '0.85rem' }}>
+                  <label className="form-label">نوع جلسة القياس:</label>
+                  <select
                     className="form-control"
-                    value={weightKg}
-                    onChange={(e) => setWeightKg(Number(e.target.value))}
-                    required
-                  />
+                    value={sessionType}
+                    onChange={(e) => setSessionType(e.target.value as any)}
+                  >
+                    <option value="initial">قياس قبلي (بداية العام الدراسي)</option>
+                    <option value="final">قياس بعدي (نهاية البرنامج)</option>
+                    <option value="followup">قياس مرحلي للمتابعة</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem', marginBottom: '1rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">الطول (سم):</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={heightCm}
+                      onChange={(e) => setHeightCm(Number(e.target.value))}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">الوزن (كجم):</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={weightKg}
+                      onChange={(e) => setWeightKg(Number(e.target.value))}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* حساب مؤشر كتلة الجسم فورياً بتنسيق متوافق مع كافة الأوضاع */}
+                <div style={{
+                  padding: '1rem 1.25rem',
+                  borderRadius: '12px',
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  border: '1px solid rgba(16, 185, 129, 0.25)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div>
+                    <span style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 700 }}>مؤشر كتلة الجسم المحسوب (BMI):</span>
+                    <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--primary, #047857)' }}>{bmi} كجم/م²</div>
+                  </div>
+                  <span className="badge badge-success" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem' }}>
+                    وزن طبيعي ومعتدل
+                  </span>
                 </div>
               </div>
 
-              {/* حساب مؤشر كتلة الجسم فورياً */}
-              <div style={{
-                padding: '1.25rem',
-                borderRadius: '10px',
-                background: '#ecfdf5',
-                border: '1px solid #a7f3d0',
-                marginBottom: '1.5rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <div>
-                  <span style={{ fontSize: '0.85rem', color: '#065f46', fontWeight: 600 }}>مؤشر كتلة الجسم المحسوب (BMI):</span>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#047857' }}>{bmi} كجم/م²</div>
-                </div>
-                <span className="badge badge-success" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem' }}>
-                  وزن طبيعي ومعتدل
-                </span>
-              </div>
-
-              <div style={{
-                display: 'flex',
-                gap: '0.75rem',
-                justifyContent: 'flex-end',
-                paddingTop: '1.25rem',
-                borderTop: '1px solid #e2e8f0'
-              }}>
+              <div className="modal-footer">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

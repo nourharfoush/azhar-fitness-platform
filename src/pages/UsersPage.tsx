@@ -529,19 +529,19 @@ export default function UsersPage() {
             </div>
             <form onSubmit={handleAddUser}>
               <div className="modal-body">
-                <div className="form-group" style={{ marginBottom: '1rem' }}>
-                  <label className="form-label">الاسم بالكامل:</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="مثال: كابتن / حازم الشريف"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.85rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">الاسم بالكامل:</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="مثال: كابتن / حازم الشريف"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                   <div className="form-group">
                     <label className="form-label">اسم المستخدم للدخول (Username):</label>
                     <div style={{ position: 'relative' }}>
@@ -588,9 +588,7 @@ export default function UsersPage() {
                       </button>
                     </div>
                   </div>
-                </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                   <div className="form-group">
                     <label className="form-label">البريد الإلكتروني المؤسسي:</label>
                     <input
@@ -613,9 +611,7 @@ export default function UsersPage() {
                       onChange={(e) => setPhone(e.target.value)}
                     />
                   </div>
-                </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                   <div className="form-group">
                     <label className="form-label">الدور الوظيفي والصلاحية:</label>
                     <select
@@ -644,24 +640,31 @@ export default function UsersPage() {
                       <option value="institute">على مستوى المعهد</option>
                     </select>
                   </div>
-                </div>
 
-                {scopeType === 'region' && (
-                  <div className="form-group" style={{ marginBottom: '1rem' }}>
-                    <label className="form-label">اختر المنطقة الأزهرية:</label>
-                    <select
-                      className="form-select"
-                      value={selectedRegionId}
-                      onChange={(e) => setSelectedRegionId(e.target.value)}
-                    >
-                      {AZHAR_REGIONS.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+                  {scopeType === 'region' ? (
+                    <div className="form-group">
+                      <label className="form-label">اختر المنطقة الأزهرية:</label>
+                      <select
+                        className="form-select"
+                        value={selectedRegionId}
+                        onChange={(e) => setSelectedRegionId(e.target.value)}
+                      >
+                        {AZHAR_REGIONS.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : (
+                    <div className="form-group" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                      <span className="form-label" style={{ visibility: 'hidden' }}>ملاحظة النطاق</span>
+                      <div style={{ fontSize: '0.85rem', color: '#64748b', background: 'rgba(0,0,0,0.03)', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                        نطاق الصلاحية محدد على مستوى {scopeType === 'national' ? 'الجمهورية بالكامل' : scopeType === 'administration' ? 'الإدارة التعليمية' : 'المعهد الأزهري'}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="modal-footer">
@@ -692,18 +695,18 @@ export default function UsersPage() {
             </div>
             <form onSubmit={handleSaveEdit}>
               <div className="modal-body">
-                <div className="form-group" style={{ marginBottom: '1rem' }}>
-                  <label className="form-label">الاسم بالكامل:</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    required
-                  />
-                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.85rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">الاسم بالكامل:</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      required
+                    />
+                  </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                   <div className="form-group">
                     <label className="form-label">اسم المستخدم للدخول (Username):</label>
                     <div style={{ position: 'relative' }}>
@@ -748,9 +751,7 @@ export default function UsersPage() {
                       </button>
                     </div>
                   </div>
-                </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                   <div className="form-group">
                     <label className="form-label">البريد الإلكتروني:</label>
                     <input
@@ -771,9 +772,7 @@ export default function UsersPage() {
                       onChange={(e) => setEditPhone(e.target.value)}
                     />
                   </div>
-                </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                   <div className="form-group">
                     <label className="form-label">الدور الوظيفي والصلاحية:</label>
                     <select
@@ -802,27 +801,34 @@ export default function UsersPage() {
                       <option value="institute">على مستوى المعهد</option>
                     </select>
                   </div>
+
+                  {editScopeType === 'region' ? (
+                    <div className="form-group">
+                      <label className="form-label">اختر المنطقة الأزهرية:</label>
+                      <select
+                        className="form-select"
+                        value={editSelectedRegionId}
+                        onChange={(e) => setEditSelectedRegionId(e.target.value)}
+                      >
+                        {AZHAR_REGIONS.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : (
+                    <div className="form-group" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                      <span className="form-label" style={{ visibility: 'hidden' }}>ملاحظة النطاق</span>
+                      <div style={{ fontSize: '0.85rem', color: '#64748b', background: 'rgba(0,0,0,0.03)', padding: '0.65rem 0.85rem', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                        نطاق الصلاحية محدد على مستوى {editScopeType === 'national' ? 'الجمهورية بالكامل' : editScopeType === 'administration' ? 'الإدارة التعليمية' : 'المعهد الأزهري'}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {editScopeType === 'region' && (
-                  <div className="form-group" style={{ marginBottom: '1rem' }}>
-                    <label className="form-label">اختر المنطقة الأزهرية:</label>
-                    <select
-                      className="form-select"
-                      value={editSelectedRegionId}
-                      onChange={(e) => setEditSelectedRegionId(e.target.value)}
-                    >
-                      {AZHAR_REGIONS.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <div className="form-group" style={{ marginTop: '0.5rem' }}>
-                  <label className="form-label">حالة الحساب:</label>
+                <div className="form-group" style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color, #f1f5f9)' }}>
+                  <label className="form-label">حالة الحساب وتفعيله:</label>
                   <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.35rem' }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                       <input

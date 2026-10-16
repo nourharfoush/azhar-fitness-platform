@@ -49,8 +49,14 @@
   --radius-full: 9999px;
 }
 
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+}
+
 /* سمة الوضع الداكن (Dark Theme) */
 [data-theme='dark'] {
+  color-scheme: dark;
   --bg-body: #0b1120;
   --bg-card: #131c2e;
   --bg-sidebar: #090e1a;
@@ -66,6 +72,30 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* إصلاح القوائم المنسدلة في المتصفحات بالوضع الداكن والفاتح */
+select,
+.form-select {
+  color-scheme: light;
+}
+
+select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+[data-theme='dark'] select,
+[data-theme='dark'] .form-select,
+[data-theme='dark'] .form-control {
+  color-scheme: dark !important;
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+[data-theme='dark'] select option {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
 }
 
 [data-theme='dark'] .card,
@@ -518,10 +548,10 @@ html, body {
 .form-select {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: #ffffff !important;
-  border: 1.5px solid #cbd5e1 !important;
-  border-radius: 10px !important;
-  color: #0f172a !important;
+  background-color: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  color: #0f172a;
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 500;
@@ -535,9 +565,8 @@ html, body {
 .form-control:focus,
 .form-input:focus,
 .form-select:focus {
-  border-color: #047857 !important;
-  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.18) !important;
-  background: #ffffff !important;
+  border-color: #047857;
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.18);
 }
 
 .form-control::placeholder,
@@ -610,7 +639,8 @@ input[type="checkbox"] {
   border-radius: 20px !important;
   box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
   width: 100% !important;
-  max-width: 650px !important;
+  max-width: 680px !important;
+  max-height: 92vh !important;
   overflow: hidden !important;
   animation: modalScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
   border: 1px solid #e2e8f0 !important;
@@ -618,6 +648,16 @@ input[type="checkbox"] {
   display: flex !important;
   flex-direction: column !important;
   margin: auto !important;
+}
+
+.modal-content form {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 
 @keyframes modalScaleIn {
@@ -638,6 +678,7 @@ input[type="checkbox"] {
   padding: 1.25rem 1.75rem !important;
   border-bottom: 1px solid #f1f5f9 !important;
   background: #f8fafc !important;
+  flex-shrink: 0 !important;
 }
 
 .modal-title {
@@ -671,10 +712,15 @@ input[type="checkbox"] {
 }
 
 .modal-body {
-  padding: 1.75rem !important;
-  max-height: calc(85vh - 140px) !important;
+  padding: 1.5rem 1.75rem !important;
   overflow-y: auto !important;
   text-align: right !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+}
+
+.modal-body .form-group {
+  margin-bottom: 0.9rem !important;
 }
 
 .modal-footer {
@@ -682,9 +728,88 @@ input[type="checkbox"] {
   align-items: center !important;
   justify-content: flex-end !important;
   gap: 0.75rem !important;
-  padding: 1.25rem 1.75rem !important;
+  padding: 1.1rem 1.75rem !important;
   border-top: 1px solid #f1f5f9 !important;
   background: #f8fafc !important;
+  flex-shrink: 0 !important;
+}
+
+/* دعم الوضع الداكن الشامل للنوافذ المنبثقة وأزرار الإلغاء والبحث */
+[data-theme='dark'] .modal-content {
+  background: #131c2e !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme='dark'] .modal-header,
+[data-theme='dark'] .modal-footer {
+  background: #0d1524 !important;
+  border-color: #1e293b !important;
+}
+
+[data-theme='dark'] .modal-title {
+  color: #f8fafc !important;
+}
+
+[data-theme='dark'] .modal-close {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+}
+
+[data-theme='dark'] .modal-close:hover {
+  background: #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+
+[data-theme='dark'] .btn-secondary {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+
+[data-theme='dark'] .btn-secondary:hover {
+  background: #334155 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .btn-ghost {
+  color: #94a3b8 !important;
+}
+
+[data-theme='dark'] .btn-ghost:hover {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+[data-theme='dark'] .search-input {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+[data-theme='dark'] .search-input:focus {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.22) !important;
+}
+
+[data-theme='dark'] .empty-state {
+  background: #131c2e !important;
+  border-color: #334155 !important;
+}
+
+[data-theme='dark'] .empty-title {
+  color: #f8fafc !important;
+}
+
+[data-theme='dark'] .empty-icon {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+}
+
+[data-theme='dark'] .badge-neutral {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
 }
 
 /* تأثيرات التحريك */
