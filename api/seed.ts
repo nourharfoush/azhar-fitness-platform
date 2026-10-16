@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 1. Institutes
     const instCol = db.collection('institutes');
     const instExisting = await instCol.countDocuments();
-    if (instExisting === 0) {
+    if (instExisting === 0 && INITIAL_INSTITUTES.length > 0) {
       await instCol.insertMany(INITIAL_INSTITUTES.map((i) => ({ ...i, _syncedAt: new Date() })));
       counts.institutes = INITIAL_INSTITUTES.length;
     } else {
@@ -44,7 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 2. Students
     const stuCol = db.collection('students');
     const stuExisting = await stuCol.countDocuments();
-    if (stuExisting === 0) {
+    if (stuExisting === 0 && INITIAL_STUDENTS.length > 0) {
       await stuCol.insertMany(INITIAL_STUDENTS.map((s) => ({ ...s, _syncedAt: new Date() })));
       counts.students = INITIAL_STUDENTS.length;
     } else {
@@ -54,7 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 3. Sessions
     const sessCol = db.collection('measurement_sessions');
     const sessExisting = await sessCol.countDocuments();
-    if (sessExisting === 0) {
+    if (sessExisting === 0 && INITIAL_SESSIONS.length > 0) {
       await sessCol.insertMany(INITIAL_SESSIONS.map((s) => ({ ...s, _syncedAt: new Date() })));
       counts.sessions = INITIAL_SESSIONS.length;
     } else {
@@ -64,17 +64,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 4. Competitions
     const compCol = db.collection('competitions');
     const compExisting = await compCol.countDocuments();
-    if (compExisting === 0) {
+    if (compExisting === 0 && INITIAL_COMPETITIONS.length > 0) {
       await compCol.insertMany(INITIAL_COMPETITIONS.map((c) => ({ ...c, _syncedAt: new Date() })));
       counts.competitions = INITIAL_COMPETITIONS.length;
     } else {
       counts.competitions = compExisting;
     }
 
-    // 5. Users
+    // 5. Users (Admin account)
     const usrCol = db.collection('users');
     const usrExisting = await usrCol.countDocuments();
-    if (usrExisting === 0) {
+    if (usrExisting === 0 && INITIAL_USERS.length > 0) {
       await usrCol.insertMany(INITIAL_USERS.map((u) => ({ ...u, _syncedAt: new Date() })));
       counts.users = INITIAL_USERS.length;
     } else {

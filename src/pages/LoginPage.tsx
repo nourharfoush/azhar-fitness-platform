@@ -297,41 +297,44 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* حسابات تجريبية سريعة */}
-          <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.75rem', fontWeight: 600 }}>
-              حسابات تجريبية سريعة (انقر للاختيار التلقائي):
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-              {allAvailableUsers.slice(0, 6).map((u) => {
-                const isSelected = identifier.toLowerCase() === (u.username || '').toLowerCase();
-                return (
-                  <button
-                    key={u.id}
-                    type="button"
-                    onClick={() => handleQuickSelect(u.username || u.email.split('@')[0], u.password || 'Azhar@2026')}
-                    style={{
-                      padding: '0.45rem 0.6rem',
-                      borderRadius: '8px',
-                      background: isSelected ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.05)',
-                      border: `1px solid ${isSelected ? 'rgba(16,185,129,0.5)' : 'rgba(255,255,255,0.08)'}`,
-                      color: isSelected ? '#34d399' : '#e2e8f0',
-                      textAlign: 'right',
-                      cursor: 'pointer',
-                      fontSize: '0.78rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '2px',
-                      transition: 'all 0.15s ease'
-                    }}
-                  >
-                    <span style={{ fontWeight: 700 }}>{u.username || u.email.split('@')[0]}</span>
-                    <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-                      {ROLE_LABELS[u.role as keyof typeof ROLE_LABELS] || u.role}
-                    </span>
-                  </button>
-                );
-              })}
+          {/* بطاقة الحساب الإداري المعتمد */}
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{
+              background: 'rgba(16, 185, 129, 0.08)',
+              border: '1px solid rgba(16, 185, 129, 0.25)',
+              borderRadius: '12px',
+              padding: '0.85rem 1rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.75rem',
+              flexWrap: 'wrap'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#34d399', marginBottom: '2px' }}>
+                  حساب مدير النظام المعتمد:
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#cbd5e1', direction: 'ltr', textAlign: 'right' }}>
+                  <span style={{ fontWeight: 700, color: '#fff' }}>admin</span> &bull; <span style={{ color: '#94a3b8' }}>Azhar@2026</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleQuickSelect('admin', 'Azhar@2026')}
+                style={{
+                  padding: '0.45rem 0.85rem',
+                  borderRadius: '8px',
+                  background: 'rgba(16, 185, 129, 0.2)',
+                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  color: '#34d399',
+                  cursor: 'pointer',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                تعبئة بيانات الأدمن تلقائياً
+              </button>
             </div>
           </div>
 

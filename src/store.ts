@@ -24,6 +24,16 @@ import {
   INITIAL_AUDIT_LOGS,
   INITIAL_SETTINGS,
 } from './data/sampleData';
+import {
+  syncUserWithAtlas,
+  deleteUserFromAtlas,
+  syncStudentWithAtlas,
+  deleteStudentFromAtlas,
+  syncInstituteWithAtlas,
+  deleteInstituteFromAtlas,
+  syncSessionWithAtlas,
+  fetchFullCloudSync,
+} from './services/api';
 
 // ------------- متجر المصادقة -------------
 interface AuthStore extends AuthState {
@@ -37,7 +47,7 @@ export const useAuthStore = create<AuthStore>()(
     (set) => ({
       user: {
         id: 'usr-admin',
-        name: 'د. عبد الرحمن الأزهري',
+        name: 'مدير عام المنظومة',
         username: 'admin',
         password: 'Azhar@2026',
         email: 'admin@azhar.gov.eg',
@@ -71,25 +81,16 @@ interface NotificationStore {
 export const useNotificationStore = create<NotificationStore>((set) => ({
   notifications: [
     {
-      id: '1',
-      title: 'بدء الموسم التدريبي والتقييمي',
-      message: 'تم تفعيل منظومة المشروع القومي للياقة البدنية بالمعاهد الأزهرية لجميع المناطق 2026/2027.',
+      id: 'notif-1',
+      title: 'تدشين المنظومة الرسمية',
+      message: 'تم تفعيل منظومة المشروع القومي للياقة البدنية بالأزهر الشريف لجميع المناطق للعام الدراسي 2026/2027.',
       type: 'info',
       userId: 'official',
       isRead: false,
       createdAt: new Date().toISOString(),
     },
-    {
-      id: '2',
-      title: 'اعتماد نتائج منطقة القاهرة',
-      message: 'تم اعتماد نتائج قياسات معهد الإمام الطيب النموذجي واكتمال مرحلة التقييم الأولى.',
-      type: 'success',
-      userId: 'official',
-      isRead: false,
-      createdAt: new Date().toISOString(),
-    },
   ],
-  unreadCount: 2,
+  unreadCount: 1,
   addNotification: (n) =>
     set((state) => {
       const notification: Notification = {
@@ -179,20 +180,56 @@ export const useStudentStore = create<StudentStore>()(
     (set) => ({
       students: INITIAL_STUDENTS,
       sessions: INITIAL_SESSIONS,
-      addStudent: (s) => set((state) => ({ students: [s, ...state.students] })),
-      updateStudent: (id, updates) =>
-        set((state) => ({
-          students: state.students.map((s) => (s.id === id ? { ...s, ...updates } : s)),
-        })),
-      deleteStudent: (id) =>
-        set((state) => ({ students: state.students.filter((s) => s.id !== id) })),
-      addSession: (s) => set((state) => ({ sessions: [s, ...state.sessions] })),
-      updateSession: (id, updates) =>
-        set((state) => ({
-          sessions: state.sessions.map((s) => (s.id === id ? { ...s, ...updates } : s)),
-        })),
+      addStudent: (s) => {
+        set((state) => ({ students: [s, ...state.students] }));
+        syncStudentWithAtlas(s).catch(console.error);
+      },
+      updateStudent: (id, updates) => {
+        set((state) => {
+          const updated = state.students.map((s) => (s.id === id ? { ...s, ...updates } : s));
+          const target = updated.find((s) => s.id === id);
+          if (target) syncStudentWithAtlas(target).catch(console.error);
+          return { students: updated };
+        });
+      },
+      deleteStudent: (id) => {
+        set((state) => ({ students: state.students.filter((s) => s.id !== id) }));
+        deleteStudentFromAtlas(id).catch(console.error);
+      },
+      addSession: (s) => {
+        set((state) => ({ sessions: [s, ...state.sessions] }));
+        syncSessionWithAtlas(s).catch(console.error);
+      },
+      updateSession: (id, updates) => {
+        set((state) => {
+          const updated = state.sessions.map((s) => (s.id === id ? { ...s, ...updates } : s));
+          const target = updated.find((s) => s.id === id);
+          if (target) syncSessionWithAtlas(target).catch(console.error);
+          return { sessions: updated };
+        });
+      },
     }),
-    { name: 'azhar-fitness-students-db' }
+    {
+      name: 'azhar-fitness-students-db',
+      version: 4,
+      migrate: (persistedState: any) => {
+        if (!persistedState || !Array.isArray(persistedState.students)) {
+          return { students: [], sessions: [] };
+        }
+        // Purge dummy demo students
+        const cleanedStudents = persistedState.students.filter(
+          (s: any) => !s.id.startsWith('stu-0') && !s.id.startsWith('stu-10')
+        );
+        const cleanedSessions = Array.isArray(persistedState.sessions)
+          ? persistedState.sessions.filter((sess: any) => !sess.id.startsWith('sess-'))
+          : [];
+        return {
+          ...persistedState,
+          students: cleanedStudents,
+          sessions: cleanedSessions,
+        };
+      },
+    }
   )
 );
 
@@ -208,18 +245,36 @@ export const useInstituteStore = create<InstituteStore>()(
   persist(
     (set) => ({
       institutes: INITIAL_INSTITUTES,
-      addInstitute: (inst) =>
-        set((state) => ({ institutes: [inst, ...state.institutes] })),
-      updateInstitute: (id, updates) =>
-        set((state) => ({
-          institutes: state.institutes.map((i) => (i.id === id ? { ...i, ...updates } : i)),
-        })),
-      deleteInstitute: (id) =>
-        set((state) => ({
-          institutes: state.institutes.filter((i) => i.id !== id),
-        })),
+      addInstitute: (inst) => {
+        set((state) => ({ institutes: [inst, ...state.institutes] }));
+        syncInstituteWithAtlas(inst).catch(console.error);
+      },
+      updateInstitute: (id, updates) => {
+        set((state) => {
+          const updated = state.institutes.map((i) => (i.id === id ? { ...i, ...updates } : i));
+          const target = updated.find((i) => i.id === id);
+          if (target) syncInstituteWithAtlas(target).catch(console.error);
+          return { institutes: updated };
+        });
+      },
+      deleteInstitute: (id) => {
+        set((state) => ({ institutes: state.institutes.filter((i) => i.id !== id) }));
+        deleteInstituteFromAtlas(id).catch(console.error);
+      },
     }),
-    { name: 'azhar-fitness-institutes' }
+    {
+      name: 'azhar-fitness-institutes',
+      version: 4,
+      migrate: (persistedState: any) => {
+        if (!persistedState || !Array.isArray(persistedState.institutes)) {
+          return { institutes: [] };
+        }
+        return {
+          ...persistedState,
+          institutes: persistedState.institutes.filter((i: any) => !i.id.startsWith('inst-')),
+        };
+      },
+    }
   )
 );
 
@@ -246,7 +301,22 @@ export const useCompetitionStore = create<CompetitionStore>()(
       addCompetitionResult: (r) =>
         set((state) => ({ competitionResults: [r, ...state.competitionResults] })),
     }),
-    { name: 'azhar-fitness-competitions' }
+    {
+      name: 'azhar-fitness-competitions',
+      version: 4,
+      migrate: (persistedState: any) => {
+        if (!persistedState || !Array.isArray(persistedState.competitions)) {
+          return { competitions: [], competitionResults: [] };
+        }
+        return {
+          ...persistedState,
+          competitions: persistedState.competitions.filter((c: any) => !c.id.startsWith('comp-')),
+          competitionResults: Array.isArray(persistedState.competitionResults)
+            ? persistedState.competitionResults.filter((r: any) => !r.id.startsWith('cres-'))
+            : [],
+        };
+      },
+    }
   )
 );
 
@@ -273,7 +343,19 @@ export const useFollowUpStore = create<FollowUpStore>()(
           fieldVisits: state.fieldVisits.filter((v) => v.id !== id),
         })),
     }),
-    { name: 'azhar-fitness-followup' }
+    {
+      name: 'azhar-fitness-followup',
+      version: 4,
+      migrate: (persistedState: any) => {
+        if (!persistedState || !Array.isArray(persistedState.fieldVisits)) {
+          return { fieldVisits: [] };
+        }
+        return {
+          ...persistedState,
+          fieldVisits: persistedState.fieldVisits.filter((v: any) => !v.id.startsWith('visit-')),
+        };
+      },
+    }
   )
 );
 
@@ -286,41 +368,61 @@ interface UserManagementStore {
   toggleUserStatus: (id: string) => void;
 }
 
+const DUMMY_USER_IDS = new Set([
+  'usr-sector',
+  'usr-cairo',
+  'usr-alex',
+  'usr-inspector-tanta',
+  'usr-teacher-tayeb',
+  'usr-arbitrator-1',
+]);
+
 export const useUserManagementStore = create<UserManagementStore>()(
   persist(
     (set) => ({
       users: INITIAL_USERS,
-      addUser: (u) => set((state) => ({ users: [u, ...state.users] })),
-      updateUser: (id, updates) =>
-        set((state) => ({
-          users: state.users.map((u) => (u.id === id ? { ...u, ...updates } : u)),
-        })),
-      deleteUser: (id) =>
-        set((state) => ({ users: state.users.filter((u) => u.id !== id) })),
-      toggleUserStatus: (id) =>
-        set((state) => ({
-          users: state.users.map((u) =>
+      addUser: (u) => {
+        set((state) => ({ users: [u, ...state.users] }));
+        syncUserWithAtlas(u).catch(console.error);
+      },
+      updateUser: (id, updates) => {
+        set((state) => {
+          const updated = state.users.map((u) => (u.id === id ? { ...u, ...updates } : u));
+          const target = updated.find((u) => u.id === id);
+          if (target) syncUserWithAtlas(target).catch(console.error);
+          return { users: updated };
+        });
+      },
+      deleteUser: (id) => {
+        set((state) => ({ users: state.users.filter((u) => u.id !== id) }));
+        deleteUserFromAtlas(id).catch(console.error);
+      },
+      toggleUserStatus: (id) => {
+        set((state) => {
+          const updated = state.users.map((u) =>
             u.id === id ? { ...u, isActive: !u.isActive } : u
-          ),
-        })),
+          );
+          const target = updated.find((u) => u.id === id);
+          if (target) syncUserWithAtlas(target).catch(console.error);
+          return { users: updated };
+        });
+      },
     }),
     {
       name: 'azhar-fitness-users',
-      version: 2,
+      version: 4,
       migrate: (persistedState: any) => {
         if (!persistedState || !Array.isArray(persistedState.users)) {
           return { users: INITIAL_USERS };
         }
+        // Purge dummy demo users, keep only admin and newly created real accounts
+        let cleaned = persistedState.users.filter((u: any) => !DUMMY_USER_IDS.has(u.id));
+        if (!cleaned.some((u: any) => u.id === 'usr-admin' || u.username === 'admin')) {
+          cleaned = [INITIAL_USERS[0], ...cleaned];
+        }
         return {
           ...persistedState,
-          users: persistedState.users.map((u: any) => {
-            const init = INITIAL_USERS.find((i) => i.id === u.id);
-            return {
-              ...u,
-              username: u.username || init?.username || (u.email ? u.email.split('@')[0] : 'user'),
-              password: u.password || init?.password || 'Azhar@2026',
-            };
-          }),
+          users: cleaned,
         };
       },
     }
@@ -349,7 +451,11 @@ export const useAuditLogStore = create<AuditLogStore>()(
         }),
       clearLogs: () => set({ logs: [] }),
     }),
-    { name: 'azhar-fitness-audit' }
+    {
+      name: 'azhar-fitness-audit',
+      version: 4,
+      migrate: () => ({ logs: INITIAL_AUDIT_LOGS }),
+    }
   )
 );
 
@@ -368,13 +474,10 @@ export const useSettingsStore = create<SettingsStore>()(
         set((state) => ({ settings: { ...state.settings, ...updates } })),
       resetAllData: () => {
         set({ settings: INITIAL_SETTINGS });
-        useStudentStore.setState({ students: INITIAL_STUDENTS, sessions: INITIAL_SESSIONS });
-        useInstituteStore.setState({ institutes: INITIAL_INSTITUTES });
-        useCompetitionStore.setState({
-          competitions: INITIAL_COMPETITIONS,
-          competitionResults: INITIAL_COMPETITION_RESULTS,
-        });
-        useFollowUpStore.setState({ fieldVisits: INITIAL_FIELD_VISITS });
+        useStudentStore.setState({ students: [], sessions: [] });
+        useInstituteStore.setState({ institutes: [] });
+        useCompetitionStore.setState({ competitions: [], competitionResults: [] });
+        useFollowUpStore.setState({ fieldVisits: [] });
         useUserManagementStore.setState({ users: INITIAL_USERS });
         useAuditLogStore.setState({ logs: INITIAL_AUDIT_LOGS });
       },
@@ -382,3 +485,32 @@ export const useSettingsStore = create<SettingsStore>()(
     { name: 'azhar-fitness-settings' }
   )
 );
+
+// ------------- خدمة المزامنة السحابية المشتركة لكافة الأجهزة -------------
+export async function initializeCrossDeviceSync() {
+  try {
+    const cloudData = await fetchFullCloudSync();
+    if (cloudData) {
+      if (Array.isArray(cloudData.users) && cloudData.users.length > 0) {
+        useUserManagementStore.setState({ users: cloudData.users });
+      }
+      if (Array.isArray(cloudData.students)) {
+        useStudentStore.setState({ students: cloudData.students });
+      }
+      if (Array.isArray(cloudData.sessions)) {
+        useStudentStore.setState({ sessions: cloudData.sessions });
+      }
+      if (Array.isArray(cloudData.institutes)) {
+        useInstituteStore.setState({ institutes: cloudData.institutes });
+      }
+      if (Array.isArray(cloudData.competitions)) {
+        useCompetitionStore.setState({ competitions: cloudData.competitions });
+      }
+      if (Array.isArray(cloudData.fieldVisits)) {
+        useFollowUpStore.setState({ fieldVisits: cloudData.fieldVisits });
+      }
+    }
+  } catch (err) {
+    console.warn('Cross-device sync fallback to local mode:', err);
+  }
+}
